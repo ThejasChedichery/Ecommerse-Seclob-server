@@ -77,6 +77,21 @@ const EditProduct = async (req, res) => {
     }
 }
 
+// get product by id
+const GetProductById = async (req, res) => {
+  try {
+      const ProductById = await ProductData.findById(req.params.id).populate('subCategoryId', 'name')
+      if (ProductById) {
+          res.status(200).send({ message: "Product fetch successfully", data: ProductById })
+      } else {
+          res.status(400).send({ message: "No Product found" })
+      }
+  } catch (error) {
+      res.status(500).send({ message: 'Cannot fetch product', error })
+  }
+}
 
 
-module.exports = {CreateProduct,GetAllProducts,EditProduct}
+
+
+module.exports = {CreateProduct,GetAllProducts,EditProduct,GetProductById}

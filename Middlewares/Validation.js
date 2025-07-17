@@ -13,10 +13,11 @@ const LoginValidation = async (req, res, next) => {
             if (isPasswordValied) {
 
                 const Token = await jwt.sign({ id: findUser._id, email: findUser.email }, 'Seclob@2025')
-                // res.cookie("token", Token)
-                console.log(findUser);
+
                 
-                req.user = {userName:findUser.userName,
+                req.user = {
+                    id:findUser._id,
+                    userName:findUser.userName,
                     email:findUser.email,
                     role:findUser.role,
                     token:Token}
@@ -37,22 +38,22 @@ const LoginValidation = async (req, res, next) => {
 
 // checking is a valied user 
 const Validation = async (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1] || req.user.token;
 
-    const Token = req.body.token || req.user.token
+    if (!token) {
+        return res.status(401).json({ message: 'Token missing or invalid' });
+    }
+
+    // const token = auth.split(' ')[1];
 
     try {
-        const isValiedUser = await jwt.verify(Token, 'Seclob@2025')
-        if (isValiedUser) {
-            req.id = isValiedUser.id
-            next()
-        }
-        else {
-            throw Error("No token avaliable")
-        }
+        const decoded = jwt.verify(token, 'Seclob@2025');
+        req.id = decoded.id;
+        next();
     } catch (err) {
-        res.status(500).send({ message: "Not an auth user  " + err })
+        res.status(403).json({ message: 'Invalid token' });
     }
-}
+};
 
 // role validation
 const RoleValidation = (...role) => {

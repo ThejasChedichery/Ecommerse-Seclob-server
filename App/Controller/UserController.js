@@ -38,6 +38,7 @@ const FindAllUser = async (req, res) => {
 const LogInUser = async (req, res) => {
 
     const user = {
+        id: req.user.id,
         userName: req.user.userName,
         email: req.user.email,
         role: req.user.role,
